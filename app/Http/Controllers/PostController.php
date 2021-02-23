@@ -31,10 +31,10 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
+    public function create()
     {
         if (Auth::user()) {
-            return view('post.create');
+            return view('posts.create');
         } else {
             abort(404);
         }
@@ -61,7 +61,7 @@ class PostController extends Controller
         } else {
             $errors = 'Поля необходимо заполнить';
 
-            return redirect('post/create')->withErrors($errors);
+            return redirect('posts/create')->withErrors($errors);
         }
     }
 
@@ -71,18 +71,9 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function show(Post $post, $id)
+    public function show(Post $post)
     {
-        $post = Post::find($id);
-/*         $comments=Comment::all()->where('post_id', $id); */
-        if ($post) {
-            return view('posts.showpost', [
-                'post' => $post,
-/*                 'comments' => $comments, */
-            ]);
-        } else {
-            abort(404);
-        }
+        return view('posts.showpost',compact('post'));
     }
 
     /**
@@ -93,22 +84,7 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        if (Auth::user()) {
-            $data['post'] = Post::find($id);
-            if (!empty($data['post']->user_id)) {
-                if ($data['post']->user_id == Auth::user()->id) {
-
-                    return view('post.create', $data);
-//        $this->authorize('edit', $ads);
-                } else {
-                    abort(404);
-                }
-            } else {
-                abort(404);
-            }
-        } else {
-            abort(404);
-        }
+        return view('posts.edit',compact('post'));
     }
 
     /**
@@ -120,18 +96,15 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        $data['post'] = Post::find($id);
-        if ($data['post']->user_id == Auth::user()->id) {
-            $post = [
-                'title' => 'required',
-                'name' => 'required',
-                'user_id' => Auth::user()->id,
-            ];
-
-            Post::find($id)->update($request->all());
-        }
-
-        return redirect('/');
+        $request->validate([
+            'title' => 'required',
+            'name' => 'required',
+        ]);
+    
+        $post->update($request->all());
+    
+        return redirect()->route('post.index')
+                        ->with('success','Post updated successfully');
     }
 
     /**
@@ -142,10 +115,9 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        $article = Post::find($id);
-        if ($post && ($post->user_id == $request->user()->id)) {
-            $post->delete();
-        }
-        return redirect('/');
+        $post->delete();
+    
+        return redirect()->route('post.index')
+                        ->with('success','Post deleted successfully');
     }
 }

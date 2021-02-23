@@ -17,12 +17,7 @@ use App\Http\Controllers\PostController;
 
 
 Route::get('/', [PostController::class,'index'])->name('home'); 
-Route::get('/post/{slug}', [PostController::class, 'show'])->name('getPostsByCategory');
-
-/* Route::get('/post/{slug_category}/{slug_post}', [PostController::class, 'getPost'])->name('getPost'); */
-/* Route::get('/', function () {
-    return view('welcome');
-}); */
+Route::resource('post', PostController::class);
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('dashboard');
