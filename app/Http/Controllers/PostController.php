@@ -7,6 +7,7 @@ use Livewire\Component;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
+use App\Policies\PostPolicy;
 
 
 class PostController extends Controller
@@ -82,9 +83,13 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function edit(Post $post)
+    public function edit(Request $request, Post $post)
     {
+        if ($request->user()->cannot('delete', $post)) {
+            abort(403);
+        }
         return view('posts.edit',compact('post'));
+        
     }
 
     /**

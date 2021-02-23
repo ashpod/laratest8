@@ -17,7 +17,7 @@ use App\Http\Controllers\PostController;
 
 
 Route::get('/', [PostController::class,'index'])->name('home'); 
-Route::resource('post', PostController::class);
+Route::Resource('post', PostController::class);
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('dashboard');
