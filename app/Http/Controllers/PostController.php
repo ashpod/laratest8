@@ -88,8 +88,9 @@ class PostController extends Controller
         if ($request->user()->cannot('delete', $post)) {
             abort(403);
         }
+        else{
         return view('posts.edit',compact('post'));
-        
+        }
     }
 
     /**
